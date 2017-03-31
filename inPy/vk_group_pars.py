@@ -127,11 +127,11 @@ def write_in_file(top_group_selebrity, group_friends):
             n += 1
             next_group = group_friends[index]
             if (n < 100):
-                f.write('{"title" : "' + str(next_group['name']).replace('"', "'") + '", "count": "' + str(
-                    next_group['count']) + '"},' + '\n')
+                f.write('{"id" : "' + str(index) + '", "title" : "' + str(next_group['name']).replace('"',
+                        "'") + '", "count": "' + str(next_group['count']) + '"},' + '\n')
             if (n == 100):
-                f.write('{"title" : "' + str(next_group['name']).replace('"', "'") + '", "count": "' + str(
-                    next_group['count']) + '"}' + '\n')
+                f.write('{"id" : "' + str(index) + '", "title" : "' + str(next_group['name']).replace('"',
+                        "'") + '", "count": "' + str(next_group['count']) + '"}' + '\n')
                 f.write(']')
                 break
 
