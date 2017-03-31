@@ -2,8 +2,6 @@ from urllib.parse import urlencode, urlparse
 import requests
 import math
 import pandas as pd
-import matplotlib.pyplot as plt
-import datetime
 
 AUTHORIZE_URL = 'https://oauth.vk.com/authorize'
 VERSION = '5.63'
