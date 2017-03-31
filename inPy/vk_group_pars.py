@@ -101,9 +101,8 @@ def get_all_group(access_token, ol_follov_and_friend):
                 id_clab = group_inf_pers['id']
                 try:
                     group_friends[id_clab]['count'] += 1
-                    group_friends[id_clab]['id_user'].append(id)
                 except KeyError:
-                    group_friends[id_clab] = {'name': group_inf_pers['name'], 'count': 1, 'id_user': [id]}
+                    group_friends[id_clab] = {'name': group_inf_pers['name'], 'count': 1}
         except KeyError:
             continue
     print('готово!')
