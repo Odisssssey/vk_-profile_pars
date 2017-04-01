@@ -69,8 +69,12 @@ def get_follover(access_token, need_id):
                                     'offset': offset,
                                     'v': VERSION}
 
-            response_follover = requests.get('https://api.vk.com/method/users.getFollowers', params_for_follovers)
-            follovers += response_follover.json()['response']['items']
+            try:
+                response_follover = requests.get('https://api.vk.com/method/users.getFollowers', params_for_follovers)
+                follovers += response_follover.json()['response']['items']
+            except KeyError:
+                count_step = count_step + 1
+                offset -= 1000
 
     return follovers
 
@@ -79,32 +83,45 @@ def all_follovers_and_friends(friends, follovers):
     ol_follov_and_friend = follovers + friends
     return ol_follov_and_friend
 
+def get_groups_friends(access_token, id):
+    params_for_groups_friends = {'access_token': access_token,
+          'user_id' : id,
+          'extended' : 1,
+          #'count' : 7,
+          'v': VERSION}
+    response_groups_friends = requests.get('https://api.vk.com/method/groups.get', params_for_groups_friends)
+
+    try:
+        groups_info = response_groups_friends.json()['response']['items']
+
+    except KeyError:
+        if(response_groups_friends.json()['error']['error_code'] == 6):
+            groups_info = get_groups_friends(access_token, id)
+        groups_info = []
+    return groups_info
+
+
 def get_all_group(access_token, ol_follov_and_friend):
     # Получаем все группы пользователей
     group_friends = {}
     sum_friend_and_follov = len(ol_follov_and_friend)
     namber_iteration = 0
     print('Получение групп началось. Это займет продолжительное время.')
+
     for id in ol_follov_and_friend:
         namber_iteration += 1
         if (namber_iteration % 250 == 0):
             print('осталось: ' + str(sum_friend_and_follov - namber_iteration))
 
-        params_for_groups_friends = {'access_token': access_token,
-                                     'user_id': id,
-                                     'extended': 1,
-                                     'v': VERSION}
-        response_groups_friends = requests.get('https://api.vk.com/method/groups.get', params_for_groups_friends)
-        try:
-            groups_info = response_groups_friends.json()['response']['items']
-            for group_inf_pers in groups_info:
-                id_clab = group_inf_pers['id']
-                try:
-                    group_friends[id_clab]['count'] += 1
-                except KeyError:
-                    group_friends[id_clab] = {'name': group_inf_pers['name'], 'count': 1}
-        except KeyError:
-            continue
+        groups_info = get_groups_friends(access_token, id)
+        for group_inf_pers in groups_info:
+            id_clab = group_inf_pers['id']
+            try:
+                group_friends[id_clab]['count'] += 1
+                group_friends[id_clab]['id_user'].append(id)
+            except KeyError:
+                group_friends[id_clab] = {'name': group_inf_pers['name'], 'count': 1, 'id_user': [id]}
+
     print('готово!')
     return group_friends
 
